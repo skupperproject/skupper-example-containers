@@ -1,10 +1,10 @@
-title: Skupper Hello World Gateway
+title: Skupper Hello World Docker
 subtitle: A minimal HTTP application deployed across Kubernetes and Docker sites using Skupper
-github_actions_url: https://github.com/ssorj/skupper-example-hello-world-gateway/actions/workflows/main.yaml
+github_actions_url: https://github.com/ssorj/skupper-example-hello-world-docker/actions/workflows/main.yaml
 overview: |
   This example is a very simple multi-service HTTP application
   deployed across a Kubernetes cluster and a bare-metal host or VM
-  running containers.
+  running Docker containers.
 
   It contains two services:
 

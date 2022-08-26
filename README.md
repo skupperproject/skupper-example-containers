@@ -1,6 +1,6 @@
-# Skupper Hello World Gateway
+# Skupper Hello World Docker
 
-[![main](https://github.com/ssorj/skupper-example-hello-world-gateway/actions/workflows/main.yaml/badge.svg)](https://github.com/ssorj/skupper-example-hello-world-gateway/actions/workflows/main.yaml)
+[![main](https://github.com/ssorj/skupper-example-hello-world-docker/actions/workflows/main.yaml/badge.svg)](https://github.com/ssorj/skupper-example-hello-world-docker/actions/workflows/main.yaml)
 
 #### A minimal HTTP application deployed across Kubernetes and Docker sites using Skupper
 
@@ -30,7 +30,7 @@ across cloud providers, data centers, and edge sites.
 
 This example is a very simple multi-service HTTP application
 deployed across a Kubernetes cluster and a bare-metal host or VM
-running containers.
+running Docker containers.
 
 It contains two services:
 
@@ -46,7 +46,7 @@ machine and the frontend in Kubernetes and maintain connectivity
 between the two services without exposing the backend to the public
 internet.
 
-<img src="images/entities.svg" width="640"/>
+<!-- <img src="images/entities.svg" width="640"/> -->
 
 ## Prerequisites
 
