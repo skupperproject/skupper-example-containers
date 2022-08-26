@@ -1,0 +1,103 @@
+title: Skupper Hello World - Gateway
+subtitle: A minimal HTTP application deployed across Kubernetes and Container sites using Skupper
+github_actions_url: https://github.com/skupperproject/skupper-example-hello-world-gateway/actions/workflows/main.yaml
+overview: |
+  This example is a very simple multi-service HTTP application
+  deployed across a Kubernetes cluster and a bare-metal host or VM.
+
+  It contains two services:
+
+  * A backend service that exposes an `/api/hello` endpoint.  It
+    returns greetings of the form `Hi, <your-name>.  I am <my-name>
+    (<pod-name>)`.
+
+  * A frontend service that sends greetings to the backend and
+    fetches new greetings in response.
+
+  With Skupper, you can run the backend as a container on your local
+  machine and the frontend in Kubernetes and maintain connectivity
+  between the two services without exposing the backend to the public
+  internet.
+
+  <!-- <img src="images/entities.svg" width="640"/> -->
+prerequisites: |
+  * A working installation of Docker or Podman
+
+  * The `kubectl` command-line tool, version 1.15 or later
+    ([installation guide][install-kubectl])
+
+  * Access to a Kubernetes cluster, from [any provider you
+    choose][kube-providers]
+
+  [install-kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
+  [kube-providers]: https://skupper.io/start/index.html#prerequisites
+sites:
+  hello:
+    kubeconfig: ~/.kube/config-hello
+    namespace: hello
+steps:
+  - standard: install_the_skupper_command_line_tool
+  - title: Set up your Kubernetes namespace
+    preamble: |
+      Use `kubectl create namespace` to create the namespace you wish
+      to use (or use an existing namespace).  Use `kubectl config
+      set-context` to set the current namespace for your session.
+    commands:
+      hello:
+        - run: kubectl create namespace hello
+          output: namespace/hello created
+        - run: kubectl config set-context --current --namespace hello
+          output: Context "minikube" modified.
+  - title: Install Skupper in your Kubernetes namespace
+    preamble: |
+      The `skupper init` command installs the Skupper router and service
+      controller in the current namespace.
+
+      **Note:** If you are using Minikube, [you need to start `minikube
+      tunnel`][minikube-tunnel] before you install Skupper.
+
+      [minikube-tunnel]: https://skupper.io/start/minikube.html#running-minikube-tunnel
+    commands:
+      hello:
+        - run: skupper init
+          output: |
+            Waiting for LoadBalancer IP or hostname...
+            Skupper is now installed in namespace 'hello'.  Use 'skupper status' to get more information.
+  - title: Deploy and expose the backend on your local machine
+    preamble: |
+      Use `docker` to run the backend service on your local machine.
+      In the `hello` namespace, use the `skupper gateway expose`
+      command to expose the database on the Skupper network.
+      Use `kubectl get service/database` to ensure the database
+      service is available.
+    commands:
+      hello:
+        - run: docker run --name backend --detach --rm -p 8080:8080 quay.io/skupper/hello-world-backend
+        - run: skupper gateway expose backend localhost 8080 --type docker
+        - await: service/backend
+        - run: kubectl get service/backend
+  - title: Deploy and expose the frontend on Kubernetes
+    preamble: |
+      Use `kubectl create deployment` to deploy the frontend service
+      in `hello`.
+
+      Use `kubectl expose` with `--type LoadBalancer` to open network
+      access to the frontend service.
+    commands:
+      hello:
+        - run: kubectl create deployment frontend --image quay.io/skupper/hello-world-frontend
+          output: deployment.apps/frontend created
+        - await: deployment/frontend
+        - run: kubectl expose deployment/frontend --port 8080 --type LoadBalancer
+          output: service/frontend exposed
+        # curl --verbose -H "Content-Type: application/json" -d '{"name": "Hubert"}' http://<service-name>:8080/api/hello
+  - standard: test_the_application
+  - standard: accessing_the_web_console
+  - standard: cleaning_up
+    commands:
+      hello:
+        - run: docker stop backend
+        - run: skupper gateway delete
+        - run: skupper delete
+        - run: kubectl delete service/frontend
+        - run: kubectl delete deployment/frontend
