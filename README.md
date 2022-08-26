@@ -68,9 +68,8 @@ internet.
 ## Step 1: Install the Skupper command-line tool
 
 The `skupper` command-line tool is the primary entrypoint for
-installing and configuring the Skupper infrastructure.  You need
-to install the `skupper` command only once for each development
-environment.
+installing and configuring Skupper.  You need to install the
+`skupper` command only once for each development environment.
 
 On Linux or Mac, you can use the install script (inspect it
 [here][install-script]) to download and extract the command:
