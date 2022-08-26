@@ -20,7 +20,7 @@ overview: |
   between the two services without exposing the backend to the public
   internet.
 
-  <img src="images/entities.svg" width="640"/>
+  <!-- <img src="images/entities.svg" width="640"/> -->
 prerequisites: |
   * A working installation of Docker ([installation
     guide][install-docker]) or Podman ([installation
