@@ -1,6 +1,6 @@
 # Skupper Hello World with containers
 
-[![main](https://github.com/ssorj/skupper-example-containers/actions/workflows/main.yaml/badge.svg)](https://github.com/ssorj/skupper-example-containers/actions/workflows/main.yaml)
+[![main](https://github.com/skupperproject/skupper-example-containers/actions/workflows/main.yaml/badge.svg)](https://github.com/skupperproject/skupper-example-containers/actions/workflows/main.yaml)
 
 #### Connect services running as Docker or Podman containers
 
@@ -174,7 +174,8 @@ the backend as a local Docker or Podman container.
 Use `kubectl create deployment` to deploy the frontend service
 in `hello-world`.
 
-Use `docker` to run the backend service on your local machine.
+Use `docker run` or `podman run` to run the backend service on
+your local machine.
 
 _**Console for hello-world:**_
 
