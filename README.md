@@ -38,7 +38,7 @@ It contains two services:
 
 * A backend service that exposes an `/api/hello` endpoint.  It
   returns greetings of the form `Hi, <your-name>.  I am <my-name>
-  (<container-name>)`.
+  (<container>)`.
 
 * A frontend service that sends greetings to the backend and
   fetches new greetings in response.
@@ -69,9 +69,9 @@ internet.
 
 ## Step 1: Install the Skupper command-line tool
 
-The `skupper` command-line tool is the primary entrypoint for
-installing and configuring Skupper.  You need to install the
-`skupper` command only once for each development environment.
+The `skupper` command-line tool is the entrypoint for installing
+and configuring Skupper.  You need to install the `skupper`
+command only once for each development environment.
 
 On Linux or Mac, you can use the install script (inspect it
 [here][install-script]) to download and extract the command:
@@ -331,9 +331,9 @@ documenting and testing Skupper examples.
 
 [skewer]: https://github.com/skupperproject/skewer
 
-Skewer provides some utilities for generating the README and running
-the example steps.  Use the `./plano` command in the project root to
-see what is available.
+Skewer provides utility functions for generating the README and
+running the example steps.  Use the `./plano` command in the project
+root to see what is available.
 
 To quickly stand up the example using Minikube, try the `./plano demo`
 command.
