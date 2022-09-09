@@ -1,4 +1,4 @@
-# Skupper Hello World with containers
+# Skupper Hello World using Docker or Podman
 
 [![main](https://github.com/skupperproject/skupper-example-containers/actions/workflows/main.yaml/badge.svg)](https://github.com/skupperproject/skupper-example-containers/actions/workflows/main.yaml)
 

@@ -1,4 +1,4 @@
-title: Skupper Hello World with containers
+title: Skupper Hello World using Docker or Podman
 subtitle: Connect services running as Docker or Podman containers
 github_actions_url: https://github.com/skupperproject/skupper-example-containers/actions/workflows/main.yaml
 overview: |
