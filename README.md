@@ -1,8 +1,8 @@
-# Skupper Hello World Docker
+# Skupper Hello World with containers
 
-[![main](https://github.com/ssorj/skupper-example-hello-world-docker/actions/workflows/main.yaml/badge.svg)](https://github.com/ssorj/skupper-example-hello-world-docker/actions/workflows/main.yaml)
+[![main](https://github.com/ssorj/skupper-example-containers/actions/workflows/main.yaml/badge.svg)](https://github.com/ssorj/skupper-example-containers/actions/workflows/main.yaml)
 
-#### A minimal HTTP application deployed across Kubernetes and Docker sites using Skupper
+#### Connect services running as Docker or Podman containers
 
 This example is part of a [suite of examples][examples] showing the
 different ways you can use [Skupper][website] to connect services
@@ -19,24 +19,26 @@ across cloud providers, data centers, and edge sites.
 * [Step 2: Access your Kubernetes cluster](#step-2-access-your-kubernetes-cluster)
 * [Step 3: Set up your Kubernetes namespace](#step-3-set-up-your-kubernetes-namespace)
 * [Step 4: Install Skupper in your Kubernetes namespace](#step-4-install-skupper-in-your-kubernetes-namespace)
-* [Step 5: Deploy and expose the backend on your local machine](#step-5-deploy-and-expose-the-backend-on-your-local-machine)
-* [Step 6: Deploy and expose the frontend on Kubernetes](#step-6-deploy-and-expose-the-frontend-on-kubernetes)
-* [Step 7: Test the application](#step-7-test-the-application)
+* [Step 5: Install the Skupper gateway](#step-5-install-the-skupper-gateway)
+* [Step 6: Deploy the frontend and backend services](#step-6-deploy-the-frontend-and-backend-services)
+* [Step 7: Expose the backend service](#step-7-expose-the-backend-service)
+* [Step 8: Expose the frontend service](#step-8-expose-the-frontend-service)
+* [Step 9: Test the application](#step-9-test-the-application)
 * [Accessing the web console](#accessing-the-web-console)
 * [Cleaning up](#cleaning-up)
 * [About this example](#about-this-example)
 
 ## Overview
 
-This example is a very simple multi-service HTTP application
-deployed across a Kubernetes cluster and a bare-metal host or VM
-running Docker containers.
+This example is a basic multi-service HTTP application deployed
+across a Kubernetes cluster and a bare-metal host or VM running
+Docker or Podman containers.
 
 It contains two services:
 
 * A backend service that exposes an `/api/hello` endpoint.  It
   returns greetings of the form `Hi, <your-name>.  I am <my-name>
-  (<pod-name>)`.
+  (<container-name>)`.
 
 * A frontend service that sends greetings to the backend and
   fetches new greetings in response.
@@ -63,7 +65,7 @@ internet.
 [install-docker]: https://docs.docker.com/engine/install/
 [install-podman]: https://podman.io/getting-started/installation
 [install-kubectl]: https://kubernetes.io/docs/tasks/tools/install-kubectl/
-[kube-providers]: https://skupper.io/start/index.html#prerequisites
+[kube-providers]: https://skupper.io/start/kubernetes.html
 
 ## Step 1: Install the Skupper command-line tool
 
@@ -90,17 +92,9 @@ Skupper][install-docs].
 ## Step 2: Access your Kubernetes cluster
 
 The procedure for accessing a Kubernetes cluster varies by
-provider. Find the instructions for your chosen provider and use
-them to authenticate and configure access for each console
-session.  See the following links for more information:
-
-* [Minikube](https://skupper.io/start/minikube.html)
-* [Amazon Elastic Kubernetes Service (EKS)](https://skupper.io/start/eks.html)
-* [Azure Kubernetes Service (AKS)](https://skupper.io/start/aks.html)
-* [Google Kubernetes Engine (GKE)](https://skupper.io/start/gke.html)
-* [IBM Kubernetes Service](https://skupper.io/start/ibmks.html)
-* [OpenShift](https://skupper.io/start/openshift.html)
-* [More providers](https://kubernetes.io/partners/#kcsp)
+provider. [Find the instructions for your chosen
+provider][kube-providers] and use them to authenticate and
+configure access.
 
 ## Step 3: Set up your Kubernetes namespace
 
@@ -149,49 +143,44 @@ Waiting for LoadBalancer IP or hostname...
 Skupper is now installed in namespace 'hello-world'.  Use 'skupper status' to get more information.
 ~~~
 
-## Step 5: Deploy and expose the backend on your local machine
+## Step 5: Install the Skupper gateway
 
-Use `docker` to run the backend service on your local machine.
-
-Use the `skupper gateway expose` command to expose the backend
-on the Skupper network.  Use `kubectl get service/backend` to
-ensure the backend service is available.
+The `skupper gateway init` command starts a Skupper router on
+your local system and links it to the Skupper router in the
+current Kubernetes namespace.
 
 _**Console for hello-world:**_
 
 ~~~ shell
-docker run --name backend --detach --rm -p 8080:8080 quay.io/skupper/hello-world-backend
-skupper gateway expose backend localhost 8080 --type docker
-kubectl get service/backend
+skupper gateway init --type docker
 ~~~
 
 _Sample output:_
 
 ~~~ console
-$ docker run --name backend --detach --rm -p 8080:8080 quay.io/skupper/hello-world-backend
-262dde0287af2c76c3088d9ff4f865f02732a762b0afd91e03ec9e3fe6b03f88
-
-$ skupper gateway expose backend localhost 8080 --type docker
-2022/08/26 07:27:11 CREATE io.skupper.router.tcpConnector fancypants-jross-egress-backend:8080 map[address:backend:8080 host:localhost name:fancypants-jross-egress-backend:8080 port:8080 siteId:f1e916db-8786-4bad-81ce-f1d3531179f0]
-
-$ kubectl get service/backend
-NAME      TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
-backend   ClusterIP   10.101.76.37   <none>        8080/TCP   10s
+$ skupper gateway init --type docker
+Skupper gateway: 'fancypants-jross'. Use 'skupper gateway status' to get more information.
 ~~~
 
-## Step 6: Deploy and expose the frontend on Kubernetes
+The `--type docker` option runs the router as a Docker
+container.  You can also run it as a Podman container (`--type
+podman`) or as a systemd service (`--type service`).
+
+## Step 6: Deploy the frontend and backend services
+
+For this example, we are running the frontend on Kubernetes and
+the backend as a local Docker or Podman container.
 
 Use `kubectl create deployment` to deploy the frontend service
 in `hello-world`.
 
-Use `kubectl expose` with `--type LoadBalancer` to open network
-access to the frontend service.
+Use `docker` to run the backend service on your local machine.
 
 _**Console for hello-world:**_
 
 ~~~ shell
 kubectl create deployment frontend --image quay.io/skupper/hello-world-frontend
-kubectl expose deployment/frontend --port 8080 --type LoadBalancer
+docker run --name backend --detach --rm -p 8080:8080 quay.io/skupper/hello-world-backend
 ~~~
 
 _Sample output:_
@@ -200,11 +189,58 @@ _Sample output:_
 $ kubectl create deployment frontend --image quay.io/skupper/hello-world-frontend
 deployment.apps/frontend created
 
+$ docker run --name backend --detach --rm -p 8080:8080 quay.io/skupper/hello-world-backend
+262dde0287af2c76c3088d9ff4f865f02732a762b0afd91e03ec9e3fe6b03f88
+~~~
+
+## Step 7: Expose the backend service
+
+Use `skupper service create` to define a Skupper service called
+`backend`.  Then use `skupper gateway bind` to attach your
+running backend process as a target for the service.
+
+_**Console for hello-world:**_
+
+~~~ shell
+skupper service create backend 8080
+skupper gateway bind backend localhost 8080
+~~~
+
+_Sample output:_
+
+~~~ console
+$ skupper service create backend 8080
+
+
+$ skupper gateway bind backend localhost 8080
+2022/09/08 07:07:00 CREATE io.skupper.router.tcpConnector fancypants-jross-egress-backend:8080 map[address:backend:8080 host:localhost name:fancypants-jross-egress-backend:8080 port:8080 siteId:d187db66-cbda-43fe-ac3b-4be22bbad1c9]
+~~~
+
+## Step 8: Expose the frontend service
+
+We have established connectivity between the Kubernetes
+namespace and the your local machine, and we've made the backend
+in `hello-world` available to the frontend running as container.
+Before we can test the application, we need external access to
+the frontend.
+
+Use `kubectl expose` with `--type LoadBalancer` to open network
+access to the frontend service.
+
+_**Console for hello-world:**_
+
+~~~ shell
+kubectl expose deployment/frontend --port 8080 --type LoadBalancer
+~~~
+
+_Sample output:_
+
+~~~ console
 $ kubectl expose deployment/frontend --port 8080 --type LoadBalancer
 service/frontend exposed
 ~~~
 
-## Step 7: Test the application
+## Step 9: Test the application
 
 Now we're ready to try it out.  Use `kubectl get service/frontend`
 to look up the external IP of the frontend service.  Then use
